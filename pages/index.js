@@ -7,6 +7,34 @@ import Title from "../components/Title.js";
 import MetaTags from "../components/Metatags.js";
 import Analytics from "../components/Analytics.js";
 import FilterSVG from "../components/Icons/FilterSVG.js";
+import Airtable from 'airtable'
+
+async function getAirtable () {
+  return new Promise((res, rej) => {
+
+    const designers = []
+    const base = new Airtable({apiKey: process.env.AIRTABLE}).base('appP2GukXGw2v7RGe');
+    base('Designers').select({
+      view: "Grid view"
+  }).eachPage(function page(records, fetchNextPage) {
+      // This function (`page`) will get called for each page of records.
+  
+      records.forEach(function(record) {
+          designers.push(record.fields)
+      });
+  
+      // To fetch the next page of records, call `fetchNextPage`.
+      // If there are more records, `page` will get called again.
+      // If there are no more records, `done` will get called.
+      fetchNextPage();
+  
+    }, function done(err) {
+      if (err) { console.error(err); rej(err); }
+      console.log(designers);
+      res(designers)
+  });
+  })
+}
 
 export async function getStaticProps() {
   const origin =
@@ -14,33 +42,41 @@ export async function getStaticProps() {
       ? "http://localhost:3000"
       : "https://brazilianswho.design/";
 
-  const res = await fetch(`${origin}/api/designers`);
-  const designers = await res.json();
+  // const res = await fetch(`${origin}/api/designers`);
+  // const designers = await res.json();
+  const designers = await getAirtable()
+  console.log(designers);
+  let filters;
+
+
+
 
   let uniqueExpertise = new Set();
   designers.map((d) => uniqueExpertise.add(d.expertise));
-
+  
   let uniqueLocation = new Set();
   designers.map((d) => uniqueLocation.add(d.location));
-
+  
   let expertises = Array.from(uniqueExpertise).map((e) => {
     return { label: e, active: false, category: "expertise" };
   });
-
+  
   let locations = Array.from(uniqueLocation)
     .sort()
     .map((e) => {
       return { label: e, active: false, category: "location" };
     });
-
-  let filters = expertises.concat(locations);
-
+  
+  filters = expertises.concat(locations);
+  
+  
   return {
     props: {
       designers,
       filters,
     },
   };
+
 }
 
 export default function Home({ designers, filters }) {
