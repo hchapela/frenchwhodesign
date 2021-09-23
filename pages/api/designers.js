@@ -6,7 +6,6 @@ export default async (req, res) => {
     (item) => item.name != "" && item.show == "Yes"
   );
 
-  console.log(sanitizeResult);
 
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/json");

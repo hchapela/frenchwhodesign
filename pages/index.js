@@ -30,7 +30,6 @@ async function getAirtable () {
   
     }, function done(err) {
       if (err) { console.error(err); rej(err); }
-      console.log(designers);
       res(designers)
   });
   })
@@ -45,9 +44,7 @@ export async function getStaticProps() {
   // const res = await fetch(`${origin}/api/designers`);
   // const designers = await res.json();
   const designers = await getAirtable()
-  console.log(designers);
   let filters;
-
 
 
 
@@ -159,7 +156,7 @@ export default function Home({ designers, filters }) {
       }}
     >
       <Head>
-        <title>Brazilians Who Design</title>
+        <title>French Who Design</title>
         <link id="favicon" rel="alternate icon" href="/favicon.ico" />
         <MetaTags />
       </Head>
@@ -216,7 +213,7 @@ function Content({ designers, handleOpenFilter, className, onClick }) {
     <div className={className} onClick={onClick}>
       <Nav />
 
-      <Title className="title m0 p0" text="Brazilians*who&nbsp;design" />
+      <Title className="title m0 p0" text="French*who&nbsp;design" />
 
       <motion.div
         initial={{ opacity: 0 }}
